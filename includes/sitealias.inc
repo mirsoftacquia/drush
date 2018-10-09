@@ -1646,7 +1646,7 @@ function drush_convert_db_from_db_url($db_url) {
       );
       $url = (object)array_map('urldecode', $url);
       $db_spec = array(
-        'driver'   => $url->scheme == 'mysqli' && extension_loaded('mysql') ? 'mysql' : $url->scheme,
+        'driver'   => drush_convert_url_scheme($url->scheme),
         'username' => $url->user,
         'password' => $url->pass,
         'host' => $url->host,
@@ -1657,6 +1657,26 @@ function drush_convert_db_from_db_url($db_url) {
   }
 
   return $db_spec;
+}
+
+/**
+ * If the scheme is 'mysql' or 'mysqli', then we want to favor 'mysqli'
+ * UNLESS mysqli is not loaded, and mysql is loaded, in which case we will
+ * revert to the 'mysql' driver.
+ *
+ * 'mysqli' does not work on very very old systems. We should rarely encounter
+ * this any more.
+ *
+ * 'mysql' never works on PHP 7.0 and later.
+ */
+function drush_convert_url_scheme($scheme) {
+  if (($scheme != 'mysql') && ($scheme != 'mysqli')) {
+    return $scheme;
+  }
+  if (extension_loaded('mysql') && !extension_loaded('mysqli')) {
+    return 'mysql';
+  }
+  return 'mysqli';
 }
 
 /**
