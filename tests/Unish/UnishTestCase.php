@@ -347,6 +347,9 @@ abstract class UnishTestCase extends \PHPUnit_Framework_TestCase {
     }
 
     // Download Drupal if not already present.
+    if (!file_exists($root) && ($version_string == '6')) {
+      passthru("git clone git@github.com:d6lts/drupal.git --branch 6.x $root");
+    }
     if (!file_exists($root)) {
       $options += array(
         'destination' => dirname($root),
