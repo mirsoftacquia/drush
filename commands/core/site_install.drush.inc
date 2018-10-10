@@ -99,6 +99,7 @@ function drush_core_site_install_validate() {
     }
     // Make sure that we will bootstrap to the 'sites-subdir' site.
     drush_set_context('DRUSH_SELECTED_URI', 'http://' . $sites_subdir);
+    drush_sitealias_create_self_alias();
   }
 
   if ($config = drush_get_option('config-dir')) {
